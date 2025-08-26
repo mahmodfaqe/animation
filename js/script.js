@@ -6,28 +6,37 @@ const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000, 0);
 
-const curve1 = new THREE.CatmullRomCurve3(
-  Array.from({ length: 50 }, (_, i) => {
-    const t = (i / 49) * Math.PI * 4;
-    return new THREE.Vector3(
-      Math.cos(t) * 3,
-      (t - Math.PI * 2) * 0.5,
-      Math.sin(t) * 3
-    );
-  })
-);
+// فەنکشن بۆ دروستکردنی DNA بە پێی ڕەنگ
+function createDNA(color) {
+  scene.clear();
+  
+  const curve1 = new THREE.CatmullRomCurve3(
+    Array.from({ length: 50 }, (_, i) => {
+      const t = (i / 49) * Math.PI * 4;
+      return new THREE.Vector3(
+        Math.cos(t) * 3,
+        (t - Math.PI * 2) * 0.5,
+        Math.sin(t) * 3
+      );
+    })
+  );
 
-const points1 = curve1.getPoints(100);
-const geometry1 = new THREE.BufferGeometry().setFromPoints(points1);
-const material1 = new THREE.LineBasicMaterial({ color: 0x4ade80 });
-const helix1 = new THREE.Line(geometry1, material1);
-scene.add(helix1);
+  const points1 = curve1.getPoints(100);
+  const geometry1 = new THREE.BufferGeometry().setFromPoints(points1);
+  const material1 = new THREE.LineBasicMaterial({ color: color });
+  const helix1 = new THREE.Line(geometry1, material1);
+  scene.add(helix1);
+  
+  return helix1;
+}
 
+// دروستکردنی DNAی سەرەتا
+let currentDNA = createDNA(0x4ade80);
 camera.position.z = 15;
 
 function animateDNA() {
   requestAnimationFrame(animateDNA);
-  helix1.rotation.y += 0.01;
+  currentDNA.rotation.y += 0.01;
   renderer.render(scene, camera);
 }
 animateDNA();
@@ -50,7 +59,7 @@ let currentSlide = 0;
 microscope.style.backgroundImage = "url('images/microscope.png')";
 
 gsap.to(microscope, {
-  left: "calc(50% - 70px)",
+  left: "calc(50% - 80px)", /* گەورەکراوە */
   opacity: 1,
   duration: 2,
   ease: "power2.out",
@@ -131,3 +140,76 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// 8. سیستەمی دۆخی ڕووناک/تاریک
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+
+// فەنکشنی دیاریکردنی دۆخی سیستەم
+function detectSystemTheme() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return 'light';
+  }
+  return 'dark';
+}
+
+// فەنکشنی گۆڕینی دۆخ
+function setTheme(theme) {
+  if (theme === 'light') {
+    body.classList.add('light-theme');
+    body.classList.remove('auto-theme');
+    // گۆڕینی ڕەنگی DNA
+    scene.remove(currentDNA);
+    currentDNA = createDNA(0x006400);
+  } else if (theme === 'dark') {
+    body.classList.remove('light-theme');
+    body.classList.remove('auto-theme');
+    // گۆڕینی ڕەنگی DNA
+    scene.remove(currentDNA);
+    currentDNA = createDNA(0x4ade80);
+  } else {
+    // دۆخی ئۆتۆماتیک
+    const systemTheme = detectSystemTheme();
+    setTheme(systemTheme);
+    body.classList.add('auto-theme');
+  }
+  
+  // نوێکردنەوەی ئایکۆنی دوگمە
+  updateThemeIcon();
+}
+
+// نوێکردنەوەی ئایکۆنی دوگمە
+function updateThemeIcon() {
+  const themeIcon = themeToggle.querySelector('.theme-icon');
+  if (body.classList.contains('light-theme')) {
+    themeIcon.textContent = '🌞';
+  } else if (body.classList.contains('auto-theme')) {
+    themeIcon.textContent = '🌓';
+  } else {
+    themeIcon.textContent = '🌙';
+  }
+}
+
+// گوێگرتن لە گۆڕینی دۆخی سیستەم
+if (window.matchMedia) {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+  mediaQuery.addEventListener('change', e => {
+    if (body.classList.contains('auto-theme')) {
+      setTheme('auto');
+    }
+  });
+}
+
+// کرتەکردن لە دوگمەی گۆڕینی دۆخ
+themeToggle.addEventListener('click', () => {
+  if (body.classList.contains('light-theme')) {
+    setTheme('dark');
+  } else if (body.classList.contains('dark-theme')) {
+    setTheme('auto');
+  } else {
+    setTheme('light');
+  }
+});
+
+// دانانی دۆخی سەرەتا
+setTheme('auto');
