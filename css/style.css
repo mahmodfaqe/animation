@@ -4,10 +4,35 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* ڕەنگی بنەڕەتی بۆ دۆخی تاریک */
+  --bg-overlay: radial-gradient(circle, rgba(0,30,60,0.5), rgba(0,5,20,0.9));
+  --carousel-border: #4b5563;
+  --carousel-shadow: 0 0 30px rgba(74, 222, 128, 0.4);
+  --anim-item-filter: brightness(1.3) drop-shadow(0 0 12px rgba(74, 222, 128, 0.4));
+  --text-color: #f0fdf4;
+  --button-bg: rgba(255, 255, 255, 0.2);
+  --button-hover-bg: rgba(255, 255, 255, 0.3);
+  --dna-color: 0x4ade80;
+}
+
+body.light-theme {
+  --bg-overlay: radial-gradient(circle, rgba(255,255,255,0.5), rgba(200,200,255,0.9));
+  --carousel-border: #cbd5e1;
+  --carousel-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  --anim-item-filter: brightness(1) drop-shadow(0 0 12px rgba(0, 100, 0, 0.4));
+  --text-color: #052e16;
+  --button-bg: rgba(0, 0, 0, 0.1);
+  --button-hover-bg: rgba(0, 0, 0, 0.2);
+  --dna-color: 0x006400;
+}
+
 body {
   background: #000;
   overflow: hidden;
   font-family: 'Segoe UI', sans-serif;
+  color: var(--text-color);
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 #video-bg {
@@ -19,6 +44,11 @@ body {
   object-fit: cover;
   opacity: 0.2;
   z-index: -3;
+  transition: opacity 0.5s ease;
+}
+
+body.light-theme #video-bg {
+  opacity: 0.5;
 }
 
 #overlay {
@@ -27,8 +57,9 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(0,30,60,0.5), rgba(0,5,20,0.9));
+  background: var(--bg-overlay);
   z-index: -2;
+  transition: background 0.5s ease;
 }
 
 #anim-container {
@@ -41,32 +72,32 @@ body {
 
 .anim-item {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: 100px; /* گەورەکراوە */
+  height: 100px; /* گەورەکراوە */
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0.95;
-  filter: brightness(1.3) drop-shadow(0 0 12px rgba(74, 222, 128, 0.4));
-  transition: transform 0.1s ease;
+  filter: var(--anim-item-filter);
+  transition: transform 0.1s ease, filter 0.5s ease;
 }
 
 #microscope {
-  width: 140px;
-  height: 140px;
+  width: 160px; /* گەورەکراوە */
+  height: 160px; /* گەورەکراوە */
   opacity: 0;
-  left: -150px;
+  left: -170px; /* گەورەکراوە */
   top: 50%;
   transform: translateY(-50%);
 }
 
 #slide-carousel {
   position: fixed;
-  width: 320px;
-  height: 220px;
-  border: 12px solid #4b5563;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(74, 222, 128, 0.4);
+  width: 400px; /* گەورەکراوە */
+  height: 280px; /* گەورەکراوە */
+  border: 14px solid var(--carousel-border); /* گەورەکراوە */
+  border-radius: 14px; /* گەورەکراوە */
+  box-shadow: var(--carousel-shadow);
   opacity: 0;
   left: 50%;
   top: 50%;
@@ -74,6 +105,7 @@ body {
   z-index: 2;
   overflow: hidden;
   pointer-events: auto;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
 }
 
 .slide-item {
@@ -101,26 +133,27 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  width: 50px; /* گەورەکراوە */
+  height: 50px; /* گەورەکراوە */
+  background: var(--button-bg);
+  color: var(--text-color);
   border: none;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 1.5rem; /* گەورەکراوە */
   cursor: pointer;
   z-index: 3;
   opacity: 0.7;
   backdrop-filter: blur(5px);
+  transition: background 0.3s ease, opacity 0.3s ease, color 0.5s ease;
 }
 
 .carousel-btn:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--button-hover-bg);
 }
 
-#prev-btn { left: 10px; }
-#next-btn { right: 10px; }
+#prev-btn { left: 15px; } /* گەورەکراوە */
+#next-btn { right: 15px; } /* گەورەکراوە */
 
 #dna-canvas {
   position: fixed;
@@ -129,4 +162,54 @@ body {
   width: 100%;
   height: 100%;
   z-index: -1;
+}
+
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--button-hover-bg);
+  transform: scale(1.1);
+}
+
+/* وەشانەکان بۆ ئامێرە بچووکەکان */
+@media (max-width: 768px) {
+  .anim-item {
+    width: 80px;
+    height: 80px;
+  }
+  
+  #microscope {
+    width: 120px;
+    height: 120px;
+    left: -130px;
+  }
+  
+  #slide-carousel {
+    width: 300px;
+    height: 210px;
+  }
+  
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
 }
