@@ -10,7 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
-<body>
+<body class="auto-theme">
 
   <!-- ڤیدیۆی بەکگراوند -->
   <video autoplay muted loop id="video-bg">
@@ -52,6 +52,11 @@
   <!-- دوگمەکانی کاروسێل -->
   <button class="carousel-btn" id="prev-btn">&#10094;</button>
   <button class="carousel-btn" id="next-btn">&#10095;</button>
+
+  <!-- دوگمەی گۆڕینی دۆخی ڕووناکی -->
+  <button id="theme-toggle" class="theme-toggle">
+    <span class="theme-icon">🌓</span>
+  </button>
 
   <!-- ئۆدیۆ -->
   <audio id="click-sound" src="sounds/click.mp3" preload="auto"></audio>
